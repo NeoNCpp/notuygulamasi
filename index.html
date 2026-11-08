@@ -115,7 +115,53 @@ main{display:flex;flex-direction:column;min-width:0;min-height:0}
 .chip.ex{background:var(--ex-bg);color:var(--ex)}.chip.ex i{background:var(--ex)}
 .chip.exam{background:var(--exam-bg);color:var(--exam)}.chip.exam i{background:var(--exam)}
 
-#canvas{flex:1;overflow:auto;padding:28px 20px 80px}
+#work{flex:1;display:flex;min-height:0;min-width:0}
+#canvas{order:2;flex:1;min-width:0;overflow:auto;padding:28px 20px 80px}
+#split{display:none;order:1;flex:none;width:7px;cursor:col-resize;border-right:1px solid var(--line);background:var(--panel);position:relative}
+#split:after{content:"";position:absolute;left:1px;top:50%;width:3px;height:36px;margin-top:-18px;border-radius:3px;background:var(--line)}
+#split:hover,#split.drag{background:var(--accent-soft)}#split:hover:after,#split.drag:after{background:var(--accent)}
+#viewer{display:none;order:0;flex:none;width:var(--vw,46%);min-width:300px;max-width:75%;background:var(--panel);flex-direction:column;min-height:0}
+body.viewer #split{display:block}body.viewer #viewer{display:flex}
+body.resizing{cursor:col-resize;user-select:none}body.resizing iframe,body.resizing #vBody{pointer-events:none}
+.vbar{display:flex;align-items:center;gap:4px;padding:6px 8px;border-bottom:1px solid var(--line);min-height:48px}
+.vtabs{flex:1;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.vtabs::-webkit-scrollbar{display:none}
+.vtab{display:flex;align-items:center;gap:6px;height:32px;padding:0 4px 0 8px;border-radius:8px;background:var(--panel2);font-size:12.5px;font-weight:500;white-space:nowrap;max-width:210px;cursor:pointer;flex:none;border:1px solid transparent}
+.vtab:hover{border-color:var(--line)}
+.vtab.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.vtab .nm{overflow:hidden;text-overflow:ellipsis}
+.vtab .ty{font-size:9.5px;font-weight:700;padding:2px 4px;border-radius:4px;color:#fff;background:#868e96;letter-spacing:.02em}
+.vtab .ty.pdf{background:#e03131}.vtab .ty.docx{background:#1c7ed6}.vtab .ty.img{background:#2f9e44}
+.vtab .x{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;opacity:.55}
+.vtab .x:hover{opacity:1;background:var(--line)}.vtab .x svg{width:13px;height:13px}
+.vtools{display:flex;align-items:center;gap:2px;padding:4px 8px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+.vtools .tb{height:28px;min-width:28px;padding:0 7px;font-size:12px}
+.vtools .sp{flex:1}
+#vZv{min-width:44px;text-align:center;font-weight:600;color:var(--text)}
+#vPage{margin-left:8px}
+#vToNote{background:var(--accent);color:#fff;font-weight:600}#vToNote:hover{filter:brightness(1.08);background:var(--accent)}
+#vBody{flex:1;overflow:auto;background:var(--bg);padding:16px;position:relative}
+.vpage{position:relative;margin:0 auto 14px;background:#fff;box-shadow:var(--shadow)}
+.vpage canvas{display:block;position:absolute;left:0;top:0}
+.vpage .pn{position:absolute;right:-2px;bottom:-20px;font-size:11px;color:var(--muted)}
+.textLayer{position:absolute;text-align:initial;inset:0;overflow:hidden;line-height:1;-webkit-text-size-adjust:none;text-size-adjust:none;forced-color-adjust:none;transform-origin:0 0;z-index:2}
+.textLayer span,.textLayer br{color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0% 0%}
+.textLayer ::selection{background:rgba(59,91,219,.3)}
+.textLayer .endOfContent{display:block;position:absolute;inset:100% 0 0;z-index:-1;cursor:default;user-select:none}
+.vdoc{background:#fff;color:#1d2330;max-width:780px;margin:0 auto;padding:52px 60px;box-shadow:var(--shadow);font-family:Calibri,Carlito,Arial,sans-serif;font-size:11pt;line-height:1.55;zoom:var(--vz,1);border-radius:3px}
+.vdoc h1{font-size:20pt}.vdoc h2{font-size:15pt}.vdoc h3{font-size:12.5pt}
+.vdoc img{max-width:100%;height:auto}.vdoc table{border-collapse:collapse;margin:8px 0}.vdoc td,.vdoc th{border:1px solid #bbb;padding:4px 8px;vertical-align:top}
+.vdoc.txt{white-space:pre-wrap;font-family:"Roboto Mono",monospace;font-size:10pt}
+.vimg{display:block;margin:0 auto;box-shadow:var(--shadow);background:#fff}
+.vdrop{border:2px dashed var(--line);border-radius:16px;padding:40px 24px;text-align:center;color:var(--muted);margin:24px auto;max-width:440px;background:var(--panel);line-height:1.6}
+.vdrop .big{width:52px;height:52px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px}
+.vdrop .big svg{width:26px;height:26px}
+.vdrop b{color:var(--text);font-size:15px;display:block;margin-bottom:4px}
+.vdrop .btn{margin-top:16px}
+#vBody.over .vdrop{border-color:var(--accent);background:var(--accent-soft)}
+.vmsg{text-align:center;color:var(--muted);padding:40px 20px;line-height:1.6}
+.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
 #page{zoom:var(--zoom);max-width:816px;min-height:1056px;margin:0 auto;background:var(--page);box-shadow:var(--shadow);border-radius:4px;padding:64px 80px 96px}
 #title{width:100%;border:0;outline:none;background:transparent;font-size:30px;font-weight:700;letter-spacing:-.01em;padding:0;margin:0 0 6px}
 #title::placeholder{color:#b5bbc6}
@@ -233,6 +279,8 @@ body.dark #editor [style*="background-color"]{color:#1d2330}
   #canvas{padding:12px 8px 60px}
   #title{font-size:24px}
   .hide-sm{display:none!important}
+  body.viewer #split{display:none}
+  #viewer{position:fixed;left:0;right:0;bottom:0;top:52px;width:auto!important;max-width:none;z-index:42;box-shadow:var(--shadow)}
 }
 </style>
 </head>
@@ -253,6 +301,7 @@ body.dark #editor [style*="background-color"]{color:#1d2330}
       <button class="tb" id="sideBtn" title="Dersler panelini aç/kapat (Ctrl+\\)"><i data-i="panel"></i></button>
       <div id="crumb"></div>
       <button class="tb txt" id="exportBtn" title="Dışa aktar"><i data-i="download"></i><span class="hide-sm">Dışa aktar</span></button>
+ <button class="tb txt" id="viewerBtn" title="Yanda PDF / Word aç"><i data-i="split"></i><span class="hide-sm">Kaynak</span></button>
       <button class="tb" id="outlineBtn" title="İçindekiler paneli"><i data-i="list"></i></button>
       <button class="tb" id="focusBtn" title="Tam ekran (Esc ile çık)"><i data-i="max"></i></button>
       <button class="tb" id="darkBtn" title="Karanlık mod"><i data-i="moon"></i></button>
@@ -309,6 +358,7 @@ body.dark #editor [style*="background-color"]{color:#1d2330}
       </div>
     </div>
 
+    <div id="work">
     <div id="canvas">
       <div id="page" style="display:none">
         <input id="title" type="text" placeholder="Başlıksız not" autocomplete="off">
@@ -316,6 +366,22 @@ body.dark #editor [style*="background-color"]{color:#1d2330}
         <div id="editor" contenteditable="true" spellcheck="true"></div>
       </div>
       <div id="empty"></div>
+    </div>
+    <div id="split" title="Sürükleyerek genişliği ayarla"></div>
+    <section id="viewer">
+      <div class="vbar">
+        <div class="vtabs" id="vTabs"></div>
+        <button class="tb" id="vOpen" title="PDF / Word dosyası aç"><i data-i="plus"></i></button>
+        <button class="tb" id="vClose" title="Paneli kapat"><i data-i="x"></i></button>
+      </div>
+      <div class="vtools" id="vTools">
+        <button class="tb" id="vZo" title="Uzaklaştır">−</button><span id="vZv">100%</span><button class="tb" id="vZi" title="Yakınlaştır">+</button>
+        <button class="tb" id="vFit" title="Genişliğe sığdır">Sığdır</button>
+        <span id="vPage"></span><span class="sp"></span>
+        <button class="tb" id="vToNote" title="Dosyada seçtiğin metni nota aktar">Seçimi nota aktar</button>
+      </div>
+      <div id="vBody"></div>
+    </section>
     </div>
 
     <div id="status">
@@ -332,6 +398,7 @@ body.dark #editor [style*="background-color"]{color:#1d2330}
 <div id="modalWrap"><div class="modal" id="modal"></div></div>
 <div id="toast"></div>
 <input type="file" id="importFile" accept=".json,application/json" hidden>
+<input type="file" id="srcFile" accept=".pdf,.docx,.doc,.txt,.md,image/*,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden>
 
 <script>
 (() => {
@@ -341,6 +408,7 @@ const IC={
  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',dots:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
  panel:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>',min:'<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>',
+ split:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16M15.5 9h2.5M15.5 12.5h2.5"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',
  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',download:'<path d="M12 3v12m-5-5 5 5 5-5M4 21h16"/>',upload:'<path d="M12 16V4m-5 5 5-5 5 5M4 21h16"/>',
  list:'<path d="M4 6h16M8 12h12M12 18h8"/>',max:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
@@ -873,7 +941,9 @@ function applyUI(){
   $('#darkBtn').innerHTML=svg(UI.dark?'sun':'moon');
   document.body.classList.toggle('no-outline',!UI.outline);
   document.body.classList.toggle('no-side',UI.side===false);$('#sideBtn').classList.toggle('on',UI.side!==false);$('#outlineBtn').classList.toggle('on',!!UI.outline);
-  document.documentElement.style.setProperty('--zoom',UI.zoom/100);$('#zVal').textContent=UI.zoom+'%';
+  document.documentElement.style.setProperty('--zoom',UI.zoom/100);
+  document.body.classList.toggle('viewer',!!UI.viewer);$('#viewerBtn').classList.toggle('on',!!UI.viewer);
+  if(UI.vw)$('#viewer').style.setProperty('--vw',UI.vw+'px');$('#zVal').textContent=UI.zoom+'%';
 }
 $('#darkBtn').onclick=()=>{UI.dark=!UI.dark;saveUI();applyUI()};
 $('#outlineBtn').onclick=()=>{if(innerWidth<=1180){document.body.classList.toggle('show-outline');return}UI.outline=!UI.outline;saveUI();applyUI()};
@@ -999,6 +1069,161 @@ $('#importFile').onchange=async e=>{
     });
   }catch(err){toast('Geçersiz yedek dosyası')}
 };
+
+/* ---------- SOURCE VIEWER (PDF / Word) ---------- */
+const V={files:[],cur:null,scale:1,fit:true,pdf:null,obs:null,gen:0,urls:{}};
+const FDB={db:null,
+  open(){if(this.db)return Promise.resolve(this.db);return new Promise((res,rej)=>{try{const r=indexedDB.open('dersNotlarimFiles',1);r.onupgradeneeded=()=>r.result.createObjectStore('files',{keyPath:'id'});r.onsuccess=()=>{this.db=r.result;res(r.result)};r.onerror=()=>rej(r.error)}catch(e){rej(e)}})},
+  async run(mode,fn){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('files',mode);const req=fn(t.objectStore('files'));t.oncomplete=()=>res(req&&req.result);t.onerror=()=>rej(t.error)})},
+  all(){return this.run('readonly',s=>s.getAll())},put(f){return this.run('readwrite',s=>s.put(f))},del(id){return this.run('readwrite',s=>s.delete(id))}
+};
+const kindOf=f=>{const n=lower(f.name);if(n.endsWith('.pdf')||f.type==='application/pdf')return'pdf';if(n.endsWith('.docx'))return'docx';if(n.endsWith('.doc'))return'doc';if((f.type||'').startsWith('image/'))return'img';if(n.endsWith('.txt')||n.endsWith('.md'))return'txt';return'other'};
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('script'));document.head.appendChild(s)})}
+const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+async function getPdfjs(){
+  if(window.pdfjsLib&&window.pdfjsWorker)return window.pdfjsLib;
+  await loadScript(PDFJS+'pdf.min.js');await loadScript(PDFJS+'pdf.worker.min.js');
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+'pdf.worker.min.js';return window.pdfjsLib;
+}
+async function getMammoth(){if(window.mammoth)return window.mammoth;await loadScript('https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js');return window.mammoth}
+
+function renderVTabs(){
+  $('#vTabs').innerHTML=V.files.map(f=>{const k=kindOf(f);return`<div class="vtab ${f.id===V.cur?'on':''}" data-f="${f.id}" title="${esc(f.name)}"><span class="ty ${k}">${k==='img'?'IMG':k.toUpperCase()}</span><span class="nm">${esc(f.name)}</span><button class="x" data-del="${f.id}" title="Listeden kaldır">${svg('x')}</button></div>`}).join('');
+  $('#vTools').style.display=V.cur?'flex':'none';
+}
+function vEmpty(){
+  V.cur=null;V.pdf=null;renderVTabs();
+  $('#vBody').innerHTML=`<div class="vdrop"><div class="big">${svg('split')}</div><b>Yanına kaynak aç</b>Ders kitabının PDF'ini ya da hocanın Word (.docx) dosyasını buraya sürükle; notunu yazarken yan tarafta açık kalsın.<br><button class="btn primary" id="vPick">${svg('upload')}Dosya seç</button><div style="font-size:12px;margin-top:12px">PDF · DOCX · TXT · Resim — açtığın dosyalar bu tarayıcıda hatırlanır</div></div>`;
+  $('#vPick').onclick=()=>$('#srcFile').click();
+}
+async function addFiles(list){
+  const arr=[...list];if(!arr.length)return;
+  let last=null;
+  for(const file of arr){
+    const f={id:newId(),name:file.name,type:file.type,size:file.size,added:Date.now(),blob:file};
+    V.files.push(f);last=f;
+    try{await FDB.put(f)}catch(e){}
+  }
+  while(V.files.length>12){const old=V.files.shift();try{await FDB.del(old.id)}catch(e){}}
+  UI.viewer=true;saveUI();applyUI();showFile(last.id);
+}
+async function removeFile(id){
+  V.files=V.files.filter(f=>f.id!==id);try{await FDB.del(id)}catch(e){}
+  if(V.urls[id]){URL.revokeObjectURL(V.urls[id]);delete V.urls[id]}
+  if(V.cur===id){const n=V.files[V.files.length-1];n?showFile(n.id):vEmpty()}else renderVTabs();
+}
+function vLoading(t){$('#vBody').innerHTML=`<div class="vmsg"><div class="spin"></div>${esc(t)}</div>`}
+function vError(t){$('#vBody').innerHTML=`<div class="vmsg">${t}</div>`}
+async function showFile(id){
+  const f=V.files.find(x=>x.id===id);if(!f){vEmpty();return}
+  V.cur=id;V.fit=true;V.pdf=null;UI.vfile=id;saveUI();renderVTabs();$('#vPage').textContent='';
+  const gen=++V.gen;const k=kindOf(f);$('#vBody').scrollTop=0;
+  if(V.obs){V.obs.disconnect();V.obs=null}
+  try{
+    if(k==='pdf'){
+      vLoading('PDF açılıyor…');const lib=await getPdfjs();const buf=await f.blob.arrayBuffer();
+      const pdf=await lib.getDocument({data:buf,isEvalSupported:false}).promise;if(gen!==V.gen)return;
+      V.pdf=pdf;const p1=await pdf.getPage(1);V.baseW=p1.getViewport({scale:1}).width;V.scale=fitScale();buildPdf();
+    }else if(k==='docx'){
+      vLoading('Word dosyası açılıyor…');const m=await getMammoth();const r=await m.convertToHtml({arrayBuffer:await f.blob.arrayBuffer()});if(gen!==V.gen)return;
+      V.scale=1;$('#vBody').innerHTML=`<div class="vdoc">${cleanStored(r.value)||'<p style="color:#888">Bu belgede metin bulunamadı.</p>'}</div>`;applyVZoom();
+    }else if(k==='txt'){
+      const t=await f.blob.text();if(gen!==V.gen)return;V.scale=1;$('#vBody').innerHTML=`<div class="vdoc txt">${esc(t)}</div>`;applyVZoom();
+    }else if(k==='img'){
+      V.urls[id]=V.urls[id]||URL.createObjectURL(f.blob);V.scale=1;$('#vBody').innerHTML=`<img class="vimg" id="vImg" src="${V.urls[id]}" alt="">`;
+      const im=$('#vImg');im.onload=()=>{V.baseW=im.naturalWidth;V.scale=fitScale();applyVZoom()};
+    }else if(k==='doc'){
+      vError(`<b>Eski .doc formatı</b> tarayıcıda açılamıyor.<br>Dosyayı Word'de açıp <b>Farklı Kaydet → .docx</b> ya da <b>PDF</b> olarak kaydet, sonra tekrar ekle.`);
+    }else vError('Bu dosya türü desteklenmiyor. PDF, DOCX, TXT veya resim ekleyebilirsin.');
+  }catch(e){
+    if(gen!==V.gen)return;
+    vError(String(e&&e.message)==='script'?'Görüntüleyici yüklenemedi. İnternet bağlantını kontrol edip tekrar dene.':'Dosya açılamadı. Bozuk ya da şifreli olabilir.');
+  }
+  updateVZ();
+}
+function fitScale(){const w=$('#vBody').clientWidth-34;return V.baseW?Math.max(.25,Math.min(4,w/V.baseW)):1}
+function updateVZ(){$('#vZv').textContent=Math.round(V.scale*100)+'%'}
+function applyVZoom(){
+  const f=V.files.find(x=>x.id===V.cur);if(!f)return;const k=kindOf(f);
+  if(k==='pdf')buildPdf();
+  else if(k==='img'){const im=$('#vImg');if(im&&V.baseW)im.style.width=Math.round(V.baseW*V.scale)+'px'}
+  else{const d=$('#vBody .vdoc');if(d)d.style.setProperty('--vz',V.scale)}
+  updateVZ();
+}
+async function buildPdf(){
+  const pdf=V.pdf;if(!pdf)return;const gen=V.gen;const body=$('#vBody');
+  const prevRatio=body.scrollHeight?body.scrollTop/body.scrollHeight:0;
+  if(V.obs)V.obs.disconnect();
+  body.innerHTML='';const frag=document.createDocumentFragment();
+  const p1=await pdf.getPage(1);if(gen!==V.gen)return;const vp1=p1.getViewport({scale:V.scale});
+  for(let i=1;i<=pdf.numPages;i++){const d=document.createElement('div');d.className='vpage';d.dataset.p=i;d.style.width=vp1.width+'px';d.style.height=vp1.height+'px';d.innerHTML=`<span class="pn">${i} / ${pdf.numPages}</span>`;frag.appendChild(d)}
+  body.appendChild(frag);body.scrollTop=prevRatio*body.scrollHeight;
+  V.obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!e.target.dataset.r){e.target.dataset.r=1;renderPdfPage(e.target,gen)}}),{root:body,rootMargin:'600px 0px'});
+  body.querySelectorAll('.vpage').forEach(d=>V.obs.observe(d));
+  updatePageNo();updateVZ();
+}
+async function renderPdfPage(div,gen){
+  try{
+    const lib=window.pdfjsLib;const page=await V.pdf.getPage(+div.dataset.p);if(gen!==V.gen)return;
+    const vp=page.getViewport({scale:V.scale});const dpr=Math.min(2.5,window.devicePixelRatio||1);
+    div.style.width=vp.width+'px';div.style.height=vp.height+'px';
+    const c=document.createElement('canvas');c.width=Math.floor(vp.width*dpr);c.height=Math.floor(vp.height*dpr);c.style.width=vp.width+'px';c.style.height=vp.height+'px';
+    div.prepend(c);
+    await page.render({canvasContext:c.getContext('2d'),viewport:vp,transform:dpr!==1?[dpr,0,0,dpr,0,0]:null}).promise;
+    if(gen!==V.gen)return;
+    const tl=document.createElement('div');tl.className='textLayer';tl.style.setProperty('--scale-factor',vp.scale);div.appendChild(tl);
+    const tc=await page.getTextContent();if(gen!==V.gen)return;
+    const task=lib.renderTextLayer({textContentSource:tc,container:tl,viewport:vp,textDivs:[]});if(task&&task.promise)await task.promise;
+  }catch(e){}
+}
+function updatePageNo(){
+  if(!V.pdf){$('#vPage').textContent='';return}
+  const body=$('#vBody');const mid=body.scrollTop+body.clientHeight/3;let p=1;
+  for(const d of body.querySelectorAll('.vpage')){if(d.offsetTop<=mid)p=+d.dataset.p;else break}
+  $('#vPage').textContent=`Sayfa ${p} / ${V.pdf.numPages}`;
+}
+$('#vBody').addEventListener('scroll',()=>{clearTimeout(updatePageNo._t);updatePageNo._t=setTimeout(updatePageNo,80)});
+$('#vZi').onclick=()=>{V.fit=false;V.scale=Math.min(4,Math.round((V.scale+.1)*10)/10);applyVZoom()};
+$('#vZo').onclick=()=>{V.fit=false;V.scale=Math.max(.3,Math.round((V.scale-.1)*10)/10);applyVZoom()};
+$('#vFit').onclick=()=>{const f=V.files.find(x=>x.id===V.cur);if(!f)return;V.fit=true;V.scale=['pdf','img'].includes(kindOf(f))?fitScale():1;applyVZoom()};
+$('#vOpen').onclick=()=>$('#srcFile').click();
+$('#srcFile').onchange=e=>{addFiles(e.target.files);e.target.value=''};
+$('#vClose').onclick=()=>{UI.viewer=false;saveUI();applyUI()};
+$('#viewerBtn').onclick=()=>{UI.viewer=!UI.viewer;saveUI();applyUI();if(UI.viewer&&!V.cur&&!V.files.length)vEmpty();refitSoon()};
+$('#vTabs').addEventListener('click',e=>{const d=e.target.closest('[data-del]');if(d){e.stopPropagation();removeFile(d.dataset.del);return}const t=e.target.closest('[data-f]');if(t&&t.dataset.f!==V.cur)showFile(t.dataset.f)});
+const vb=$('#vBody');
+['dragenter','dragover'].forEach(ev=>vb.addEventListener(ev,e=>{e.preventDefault();vb.classList.add('over')}));
+['dragleave','drop'].forEach(ev=>vb.addEventListener(ev,e=>{e.preventDefault();if(ev==='dragleave'&&vb.contains(e.relatedTarget))return;vb.classList.remove('over')}));
+vb.addEventListener('drop',e=>{if(e.dataTransfer&&e.dataTransfer.files.length)addFiles(e.dataTransfer.files)});
+// selection -> note
+$('#vToNote').addEventListener('mousedown',e=>e.preventDefault());
+$('#vToNote').onclick=()=>{
+  const s=getSelection();const inV=s.rangeCount&&vb.contains(s.anchorNode);
+  let t=inV?s.toString():'';t=t.replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+  if(!t){toast('Önce yandaki dosyada bir metin seç');return}
+  if(!cur){toast('Önce bir başlık aç');return}
+  if(savedRange&&editor.contains(savedRange.startContainer))restoreSel();
+  else{editor.focus();const r=document.createRange();r.selectNodeContents(editor);r.collapse(false);const ss=getSelection();ss.removeAllRanges();ss.addRange(r)}
+  const sel=getSelection();let blk=sel.anchorNode;if(blk&&blk.nodeType===3)blk=blk.parentElement;blk=blk&&blk.closest&&blk.closest('p,h1,h2,h3,li,blockquote,pre,td');
+  if(blk&&blk.textContent.replace(/\u200b/g,'').trim())document.execCommand('insertParagraph');
+  t.split(/\n\s*\n/).forEach((p,i)=>{if(i)document.execCommand('insertParagraph');document.execCommand('insertText',false,p.replace(/\s*\n\s*/g,' '))});
+  onEdit();toast('Nota aktarıldı');
+};
+// splitter
+(()=>{const sp=$('#split');let sx=0,sw=0;
+  sp.addEventListener('pointerdown',e=>{sx=e.clientX;sw=$('#viewer').offsetWidth;sp.classList.add('drag');document.body.classList.add('resizing');sp.setPointerCapture(e.pointerId)});
+  sp.addEventListener('pointermove',e=>{if(!sp.classList.contains('drag'))return;const total=$('#work').offsetWidth;const w=Math.max(300,Math.min(total-380,sw+(e.clientX-sx)));$('#viewer').style.setProperty('--vw',w+'px');UI.vw=w});
+  const end=()=>{if(!sp.classList.contains('drag'))return;sp.classList.remove('drag');document.body.classList.remove('resizing');saveUI();refitSoon()};
+  sp.addEventListener('pointerup',end);sp.addEventListener('pointercancel',end);
+  sp.addEventListener('dblclick',()=>{UI.vw=null;$('#viewer').style.removeProperty('--vw');saveUI();refitSoon()});
+})();
+function refitSoon(){clearTimeout(refitSoon._t);refitSoon._t=setTimeout(()=>{const f=V.files.find(x=>x.id===V.cur);if(f&&V.fit&&['pdf','img'].includes(kindOf(f))){const ns=fitScale();if(Math.abs(ns-V.scale)>.01){V.scale=ns;applyVZoom()}}},120)}
+window.addEventListener('resize',refitSoon);
+(async()=>{
+  try{V.files=((await FDB.all())||[]).sort((a,b)=>a.added-b.added)}catch(e){V.files=[]}
+  if(UI.vfile&&V.files.some(f=>f.id===UI.vfile))showFile(UI.vfile);
+  else if(V.files.length)showFile(V.files[V.files.length-1].id);else vEmpty();
+})();
 
 /* ---------- INIT ---------- */
 applyUI();renderTree();
