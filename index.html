@@ -322,7 +322,14 @@ body.dark .rdHL{background:rgba(124,149,255,.18)}
 .npick button svg{width:15px;height:15px;color:var(--muted)}
 
 /* GİRİŞ EKRANI */
-#auth{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:20px;background:radial-gradient(1200px 600px at 10% -10%,var(--accent-soft),transparent),var(--bg);overflow:auto}
+#auth{--bg:#0d0f14;--panel:#161920;--panel2:#1d2129;--line:#2a2f3a;--text:#e8eaf0;--muted:#8d95a5;--accent:#7c95ff;--accent-soft:#232a45;--imp:#ff6b6b;--imp-bg:#3a1f22;
+  position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:20px;color:var(--text);overflow:auto;color-scheme:dark;
+  background:radial-gradient(900px 500px at 15% -10%,rgba(124,149,255,.16),transparent 60%),radial-gradient(800px 500px at 110% 110%,rgba(156,54,181,.12),transparent 60%),var(--bg)}
+#auth .acard{box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04)}
+#auth .atabs button.on{background:#2b303c;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+#auth #aSubmit{background:#5b74f0}
+#auth .afield input::placeholder{color:#5d6576}
+#auth .afield input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--panel2) inset;-webkit-text-fill-color:var(--text)}
 #auth.show{display:flex}
 .acard{width:100%;max-width:400px;background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 60px rgba(16,24,40,.12);padding:30px 28px}
 .alogo{display:flex;align-items:center;gap:12px;margin-bottom:6px}
@@ -500,12 +507,12 @@ body.dark .rdHL{background:rgba(124,149,255,.18)}
    (Proje ayarları → Genel → Uygulamalarınız → Web uygulaması → SDK yapılandırması)
    ===================================================================== */
 const FIREBASE_CONFIG = {
-  apiKey: "BURAYA_API_KEY",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyCqE21yoSBlAErlmcj2qpDoLEbYieCz7AM",
+  authDomain: "ders-notlarim-ce687.firebaseapp.com",
+  projectId: "ders-notlarim-ce687",
+  storageBucket: "ders-notlarim-ce687.firebasestorage.app",
+  messagingSenderId: "967715502204",
+  appId: "1:967715502204:web:fe03d0da14ebe74ab1b1f9"
 };
 /* ===================================================================== */
 const configured = !!FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('BURAYA') && !!FIREBASE_CONFIG.projectId;
@@ -739,7 +746,7 @@ function showAuth(state){
   box.innerHTML=`<div class="atabs" role="tablist"><button data-m="login" class="${reg?'':'on'}" role="tab">Giriş yap</button><button data-m="register" class="${reg?'on':''}" role="tab">Kayıt ol</button></div>
     <form id="aForm" autocomplete="on" novalidate>
       <div class="aerr" id="aErr" role="alert"></div>
-      <div class="afield"><label for="aUser">Kullanıcı adı</label><input id="aUser" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="ör. efe.turkar">${reg?'<div class="ahint">3–24 karakter: harf, rakam, nokta, alt çizgi, tire</div>':''}</div>
+      <div class="afield"><label for="aUser">Kullanıcı adı</label><input id="aUser" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="turkar.not">${reg?'<div class="ahint">3–24 karakter: harf, rakam, nokta, alt çizgi, tire</div>':''}</div>
       <div class="afield"><label for="aPass">Şifre</label><input id="aPass" type="password" name="password" autocomplete="${reg?'new-password':'current-password'}" placeholder="••••••"></div>
       ${reg?'<div class="afield"><label for="aPass2">Şifre (tekrar)</label><input id="aPass2" type="password" autocomplete="new-password" placeholder="••••••"></div>':''}
       <button class="btn primary" id="aSubmit" type="submit">${reg?'Hesap oluştur':'Giriş yap'}</button>
