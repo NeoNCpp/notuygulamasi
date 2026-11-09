@@ -152,7 +152,12 @@ body.resizing{cursor:col-resize;user-select:none}body.resizing iframe,body.resiz
 .vdoc h1{font-size:20pt}.vdoc h2{font-size:15pt}.vdoc h3{font-size:12.5pt}
 .vdoc img{max-width:100%;height:auto}.vdoc table{border-collapse:collapse;margin:8px 0}.vdoc td,.vdoc th{border:1px solid #bbb;padding:4px 8px;vertical-align:top}
 .vdoc.txt{white-space:pre-wrap;font-family:"Roboto Mono",monospace;font-size:10pt}
-.vimg{display:block;margin:0 auto;box-shadow:var(--shadow);background:#fff}
+.vimgw{position:relative;margin:0 auto;box-shadow:var(--shadow);background:#fff}
+.vimg{position:absolute;left:50%;top:50%;display:block;transform-origin:center;max-width:none}
+.textLayer[data-main-rotation="90"]{transform:rotate(90deg) translateY(-100%)}
+.textLayer[data-main-rotation="180"]{transform:rotate(180deg) translate(-100%,-100%)}
+.textLayer[data-main-rotation="270"]{transform:rotate(270deg) translateX(-100%)}
+.vrot{display:none}
 .vdrop{border:2px dashed var(--line);border-radius:16px;padding:40px 24px;text-align:center;color:var(--muted);margin:24px auto;max-width:440px;background:var(--panel);line-height:1.6}
 .vdrop .big{width:52px;height:52px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px}
 .vdrop .big svg{width:26px;height:26px}
@@ -411,6 +416,8 @@ body.dark .rdHL{background:rgba(124,149,255,.18)}
       <div class="vtools" id="vTools">
         <button class="tb" id="vZo" title="Uzaklaştır">−</button><span id="vZv">100%</span><button class="tb" id="vZi" title="Yakınlaştır">+</button>
         <button class="tb" id="vFit" title="Genişliğe sığdır">Sığdır</button>
+        <button class="tb vrot" id="vRotL" title="Sola çevir (90°)"><i data-i="rotl"></i></button>
+        <button class="tb vrot" id="vRotR" title="Sağa çevir (90°)"><i data-i="rotr"></i></button>
         <button class="tb" id="vSwap" title="Bu notu ana sayfada aç, açık olan notu yana al">⇄ Yer değiştir</button>
         <span id="vPage"></span><span class="sp"></span>
         <button class="tb" id="vToNote" title="Dosyada seçtiğin metni nota aktar">Seçimi nota aktar</button>
@@ -457,6 +464,7 @@ const IC={
  split:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16M15.5 9h2.5M15.5 12.5h2.5"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',
  speaker:'<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/>',play:'<path d="M7 4.5v15l12.5-7.5z"/>',pause:'<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>',
  stop:'<rect x="6" y="6" width="12" height="12" rx="2"/>',prev:'<path d="M19 6 10 12l9 6zM6 6v12"/>',next:'<path d="m5 6 9 6-9 6zM18 6v12"/>',
+ rotl:'<path d="M3 4v5h5"/><path d="M3.6 14a8.5 8.5 0 1 0 2.1-7.6L3 9"/>',rotr:'<path d="M21 4v5h-5"/><path d="M20.4 14a8.5 8.5 0 1 1-2.1-7.6L21 9"/>',
  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',download:'<path d="M12 3v12m-5-5 5 5 5-5M4 21h16"/>',upload:'<path d="M12 16V4m-5 5 5-5 5 5M4 21h16"/>',
  list:'<path d="M4 6h16M8 12h12M12 18h8"/>',max:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
@@ -1161,6 +1169,7 @@ async function removeFile(id){
   V.files=V.files.filter(f=>f.id!==id);
   if(id.startsWith('note:')){UI.vnotes=(UI.vnotes||[]).filter(x=>'note:'+x.n!==id);saveUI()}else{try{await FDB.del(id)}catch(e){}}
   if(V.urls[id]){URL.revokeObjectURL(V.urls[id]);delete V.urls[id]}
+  if(UI.vrot&&UI.vrot[id]){delete UI.vrot[id];saveUI()}
   if(V.cur===id){const n=V.files[V.files.length-1];n?showFile(n.id):vEmpty()}else renderVTabs();
 }
 function vLoading(t){$('#vBody').innerHTML=`<div class="vmsg"><div class="spin"></div>${esc(t)}</div>`}
@@ -1168,22 +1177,22 @@ function vError(t){$('#vBody').innerHTML=`<div class="vmsg">${t}</div>`}
 async function showFile(id){
   const f=V.files.find(x=>x.id===id);if(!f){vEmpty();return}
   V.cur=id;V.fit=true;V.pdf=null;UI.vfile=id;saveUI();renderVTabs();$('#vPage').textContent='';
-  const gen=++V.gen;const k=kindOf(f);$('#vBody').scrollTop=0;$('#vSwap').style.display=k==='note'?'inline-flex':'none';
+  const gen=++V.gen;const k=kindOf(f);$('#vBody').scrollTop=0;f.rot=(UI.vrot&&UI.vrot[id])||0;document.querySelectorAll('.vrot').forEach(b=>b.style.display=(k==='pdf'||k==='img')?'inline-flex':'none');$('#vSwap').style.display=k==='note'?'inline-flex':'none';
   if(V.obs){V.obs.disconnect();V.obs=null}
   try{
     if(k==='note'){V.scale=V.noteScale||1;renderSideNote();return}
     if(k==='pdf'){
       vLoading('PDF açılıyor…');const lib=await getPdfjs();const buf=await f.blob.arrayBuffer();
       const pdf=await lib.getDocument({data:buf,isEvalSupported:false}).promise;if(gen!==V.gen)return;
-      V.pdf=pdf;const p1=await pdf.getPage(1);V.baseW=p1.getViewport({scale:1}).width;V.scale=fitScale();buildPdf();
+      V.pdf=pdf;const p1=await pdf.getPage(1);V.baseW=p1.getViewport({scale:1,rotation:pdfRot(p1)}).width;V.scale=fitScale();buildPdf();
     }else if(k==='docx'){
       vLoading('Word dosyası açılıyor…');const m=await getMammoth();const r=await m.convertToHtml({arrayBuffer:await f.blob.arrayBuffer()});if(gen!==V.gen)return;
       V.scale=1;$('#vBody').innerHTML=`<div class="vdoc">${cleanStored(r.value)||'<p style="color:#888">Bu belgede metin bulunamadı.</p>'}</div>`;applyVZoom();
     }else if(k==='txt'){
       const t=await f.blob.text();if(gen!==V.gen)return;V.scale=1;$('#vBody').innerHTML=`<div class="vdoc txt">${esc(t)}</div>`;applyVZoom();
     }else if(k==='img'){
-      V.urls[id]=V.urls[id]||URL.createObjectURL(f.blob);V.scale=1;$('#vBody').innerHTML=`<img class="vimg" id="vImg" src="${V.urls[id]}" alt="">`;
-      const im=$('#vImg');im.onload=()=>{V.baseW=im.naturalWidth;V.scale=fitScale();applyVZoom()};
+      V.urls[id]=V.urls[id]||URL.createObjectURL(f.blob);V.scale=1;$('#vBody').innerHTML=`<div class="vimgw" id="vImgW"><img class="vimg" id="vImg" src="${V.urls[id]}" alt=""></div>`;
+      const im=$('#vImg');im.onload=()=>{V.baseW=(f.rot||0)%180?im.naturalHeight:im.naturalWidth;V.scale=fitScale();applyVZoom()};
     }else if(k==='doc'){
       vError(`<b>Eski .doc formatı</b> tarayıcıda açılamıyor.<br>Dosyayı Word'de açıp <b>Farklı Kaydet → .docx</b> ya da <b>PDF</b> olarak kaydet, sonra tekrar ekle.`);
     }else vError('Bu dosya türü desteklenmiyor. PDF, DOCX, TXT veya resim ekleyebilirsin.');
@@ -1193,12 +1202,21 @@ async function showFile(id){
   }
   updateVZ();
 }
+function curF(){return V.files.find(x=>x.id===V.cur)}
+function pdfRot(page){const f=curF();return ((page.rotate||0)+((f&&f.rot)||0))%360}
+function rotate(d){
+  const f=curF();if(!f)return;const k=kindOf(f);if(k!=='pdf'&&k!=='img')return;
+  f.rot=(((f.rot||0)+d)%360+360)%360;UI.vrot=UI.vrot||{};if(f.rot)UI.vrot[f.id]=f.rot;else delete UI.vrot[f.id];saveUI();
+  if(k==='pdf'&&V.pdf){V.pdf.getPage(1).then(p=>{V.baseW=p.getViewport({scale:1,rotation:pdfRot(p)}).width;if(V.fit)V.scale=fitScale();buildPdf()})}
+  else{const im=$('#vImg');if(im&&im.naturalWidth){V.baseW=f.rot%180?im.naturalHeight:im.naturalWidth;if(V.fit)V.scale=fitScale()}applyVZoom()}
+}
 function fitScale(){const w=$('#vBody').clientWidth-34;return V.baseW?Math.max(.25,Math.min(4,w/V.baseW)):1}
 function updateVZ(){$('#vZv').textContent=Math.round(V.scale*100)+'%'}
 function applyVZoom(){
   const f=V.files.find(x=>x.id===V.cur);if(!f)return;const k=kindOf(f);
   if(k==='pdf')buildPdf();
-  else if(k==='img'){const im=$('#vImg');if(im&&V.baseW)im.style.width=Math.round(V.baseW*V.scale)+'px'}
+  else if(k==='img'){const im=$('#vImg'),w=$('#vImgW');if(im&&im.naturalWidth){const r=f.rot||0,W=im.naturalWidth*V.scale,H=im.naturalHeight*V.scale;
+    im.style.width=W+'px';im.style.height=H+'px';im.style.transform=`translate(-50%,-50%) rotate(${r}deg)`;w.style.width=(r%180?H:W)+'px';w.style.height=(r%180?W:H)+'px'}}
   else{const d=$('#vBody .vdoc');if(d)d.style.setProperty('--vz',V.scale);if(k==='note')V.noteScale=V.scale}
   updateVZ();
 }
@@ -1207,7 +1225,7 @@ async function buildPdf(){
   const prevRatio=body.scrollHeight?body.scrollTop/body.scrollHeight:0;
   if(V.obs)V.obs.disconnect();
   body.innerHTML='';const frag=document.createDocumentFragment();
-  const p1=await pdf.getPage(1);if(gen!==V.gen)return;const vp1=p1.getViewport({scale:V.scale});
+  const p1=await pdf.getPage(1);if(gen!==V.gen)return;const vp1=p1.getViewport({scale:V.scale,rotation:pdfRot(p1)});
   for(let i=1;i<=pdf.numPages;i++){const d=document.createElement('div');d.className='vpage';d.dataset.p=i;d.style.width=vp1.width+'px';d.style.height=vp1.height+'px';d.innerHTML=`<span class="pn">${i} / ${pdf.numPages}</span>`;frag.appendChild(d)}
   body.appendChild(frag);body.scrollTop=prevRatio*body.scrollHeight;
   V.obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!e.target.dataset.r){e.target.dataset.r=1;renderPdfPage(e.target,gen)}}),{root:body,rootMargin:'600px 0px'});
@@ -1217,7 +1235,7 @@ async function buildPdf(){
 async function renderPdfPage(div,gen){
   try{
     const lib=window.pdfjsLib;const page=await V.pdf.getPage(+div.dataset.p);if(gen!==V.gen)return;
-    const vp=page.getViewport({scale:V.scale});const dpr=Math.min(2.5,window.devicePixelRatio||1);
+    const vp=page.getViewport({scale:V.scale,rotation:pdfRot(page)});const dpr=Math.min(2.5,window.devicePixelRatio||1);
     div.style.width=vp.width+'px';div.style.height=vp.height+'px';
     const c=document.createElement('canvas');c.width=Math.floor(vp.width*dpr);c.height=Math.floor(vp.height*dpr);c.style.width=vp.width+'px';c.style.height=vp.height+'px';
     div.prepend(c);
@@ -1237,6 +1255,7 @@ function updatePageNo(){
 $('#vBody').addEventListener('scroll',()=>{clearTimeout(updatePageNo._t);updatePageNo._t=setTimeout(updatePageNo,80)});
 $('#vZi').onclick=()=>{V.fit=false;V.scale=Math.min(4,Math.round((V.scale+.1)*10)/10);applyVZoom()};
 $('#vZo').onclick=()=>{V.fit=false;V.scale=Math.max(.3,Math.round((V.scale-.1)*10)/10);applyVZoom()};
+$('#vRotL').onclick=()=>rotate(-90);$('#vRotR').onclick=()=>rotate(90);
 $('#vFit').onclick=()=>{const f=V.files.find(x=>x.id===V.cur);if(!f)return;V.fit=true;V.scale=['pdf','img'].includes(kindOf(f))?fitScale():1;applyVZoom()};
 $('#vOpen').onclick=e=>menu(e.currentTarget,[
   {label:'PDF / Word dosyası aç',icon:'upload',fn:()=>$('#srcFile').click()},
