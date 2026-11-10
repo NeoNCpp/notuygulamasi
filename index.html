@@ -727,13 +727,13 @@ function connect(){
 /* ---------- OTURUM (giriş / kayıt / çıkış) ---------- */
 const AUTH_ERR={
   'auth/invalid-credential':'Kullanıcı adı veya şifre yanlış.','auth/wrong-password':'Kullanıcı adı veya şifre yanlış.','auth/user-not-found':'Kullanıcı adı veya şifre yanlış.',
-  'auth/invalid-login-credentials':'Kullanıcı adı veya şifre yanlış.','auth/email-already-in-use':'Bu kullanıcı adı alınmış, başka bir tane dene.',
+  'auth/invalid-login-credentials':'Kullanıcı adı veya şifre yanlış.','auth/email-already-in-use':'Bu kullanıcı adı daha önce alınmış. Başka bir kullanıcı adı seç.',
   'auth/weak-password':'Şifre en az 6 karakter olmalı.','auth/too-many-requests':'Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.',
   'auth/network-request-failed':'İnternet bağlantısı yok gibi görünüyor.','auth/operation-not-allowed':'Firebase\'de E-posta/Şifre girişi açık değil (Authentication → Sign-in method).',
   'auth/invalid-email':'Kullanıcı adı geçersiz.','auth/requires-recent-login':'Güvenlik için çıkış yapıp tekrar giriş yap.','auth/invalid-api-key':'Firebase API anahtarı hatalı.'
 };
 const authMsg=e=>AUTH_ERR[e&&e.code]||('Bir hata oluştu'+(e&&e.code?' ('+e.code+')':'')+'.');
-const normUser=u=>String(u||'').trim().toLocaleLowerCase('tr').replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c');
+const normUser=u=>String(u||'').toLowerCase().replace(/[^a-z0-9._]/g,'');
 let authMode='login';
 function showAuth(state){
   const box=$('#aBody');$('#auth').classList.add('show');
@@ -746,7 +746,7 @@ function showAuth(state){
   box.innerHTML=`<div class="atabs" role="tablist"><button data-m="login" class="${reg?'':'on'}" role="tab">Giriş yap</button><button data-m="register" class="${reg?'on':''}" role="tab">Kayıt ol</button></div>
     <form id="aForm" autocomplete="on" novalidate>
       <div class="aerr" id="aErr" role="alert"></div>
-      <div class="afield"><label for="aUser">Kullanıcı adı</label><input id="aUser" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="turkar.not">${reg?'<div class="ahint">3–24 karakter: harf, rakam, nokta, alt çizgi, tire</div>':''}</div>
+      <div class="afield"><label for="aUser">Kullanıcı adı</label><input id="aUser" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="turkar.not" maxlength="24" inputmode="latin" autocomplete="username">${reg?'<div class="ahint" id="aHint">3–24 karakter · küçük harf (a–z), rakam, nokta ( . ) ve alt çizgi ( _ )</div>':''}</div>
       <div class="afield"><label for="aPass">Şifre</label><input id="aPass" type="password" name="password" autocomplete="${reg?'new-password':'current-password'}" placeholder="••••••"></div>
       ${reg?'<div class="afield"><label for="aPass2">Şifre (tekrar)</label><input id="aPass2" type="password" autocomplete="new-password" placeholder="••••••"></div>':''}
       <button class="btn primary" id="aSubmit" type="submit">${reg?'Hesap oluştur':'Giriş yap'}</button>
@@ -755,10 +755,21 @@ function showAuth(state){
   box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{authMode=b.dataset.m;showAuth()});
   const tr=box.querySelector('#aToReg');if(tr)tr.onclick=e=>{e.preventDefault();authMode='register';showAuth()};
   {const u=$('#aUser');if(u&&!('ontouchstart' in window))u.focus()}
+  const uIn=$('#aUser');
+  uIn.addEventListener('input',()=>{
+    const raw=uIn.value,clean=normUser(raw);
+    if(raw!==clean){
+      const pos=uIn.selectionStart-(raw.length-clean.length);uIn.value=clean;try{uIn.setSelectionRange(Math.max(0,pos),Math.max(0,pos))}catch(_){}
+      if(raw.toLowerCase().replace(/[^a-z0-9._]/g,'')!==raw.toLowerCase()){const h=$('#aHint')||$('#aErr');
+        if(h===$('#aErr')){h.textContent='Kullanıcı adında sadece a–z harfleri, rakam, nokta ve alt çizgi kullanılabilir (ç, ş, ğ, ü, ö, ı, boşluk ve diğer semboller olmaz).';h.classList.add('show')}
+        else{h.style.color='var(--imp)';h.textContent='Sadece a–z, 0–9, . ve _ · Türkçe karakter, boşluk ve diğer semboller kullanılamaz';clearTimeout(h._t);h._t=setTimeout(()=>{h.style.color='';h.textContent='3–24 karakter · küçük harf (a–z), rakam, nokta ( . ) ve alt çizgi ( _ )'},2500)}}
+    }
+  });
   $('#aForm').onsubmit=async e=>{
     e.preventDefault();const err=$('#aErr');const bad=m=>{err.textContent=m;err.classList.add('show')};err.classList.remove('show');
     const u=normUser($('#aUser').value),p=$('#aPass').value;
-    if(!/^[a-z0-9._-]{3,24}$/.test(u))return bad('Kullanıcı adı 3–24 karakter olmalı; sadece harf, rakam, nokta, alt çizgi ve tire kullan.');
+    if(!/^[a-z0-9._]{3,24}$/.test(u))return bad('Kullanıcı adı 3–24 karakter olmalı; sadece küçük harf (a–z), rakam, nokta ve alt çizgi içerebilir.');
+    if(/^\.|\.$|\.\./.test(u))return bad('Kullanıcı adı nokta ile başlayamaz, bitemez ve iki nokta yan yana olamaz.');
     if(p.length<6)return bad('Şifre en az 6 karakter olmalı.');
     if(reg&&p!==$('#aPass2').value)return bad('Şifreler aynı değil.');
     const btn=$('#aSubmit');btn.disabled=true;btn.textContent=reg?'Hesap oluşturuluyor…':'Giriş yapılıyor…';
